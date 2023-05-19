@@ -38,6 +38,8 @@ const Home_Page = () => {
   const [loggedinId, setLoggedinId] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [user, setUser] = useState(null);
+  const [postText, setPostText] = useState("");
+
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -80,6 +82,12 @@ const Home_Page = () => {
     alert("Location Clicked");
   };
 
+  const handleViewjob = () => {
+    alert("View Job Button Clicked");
+    };
+
+
+
   const handleProfileButtonClick = () => {
     alert("Profile Button Clicked");
   };
@@ -88,9 +96,43 @@ const Home_Page = () => {
     alert("Profession Filter Clicked");
   };
 
+    const handleMenuButtonClick = () => {
+    alert("Menu Button Clicked");
+    };
+
+    const handlePostButtonClick = () => {
+    alert("Post Button Clicked");
+    };
+
+    const handlePostText = (text) => {
+    setPostText(text);  
+    };
+
+
+
+
   return (
     <View style={styles.container}>
-      <Text>This is home page</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={handleMenuButtonClick}
+        >
+          <Ionicons name="menu-outline" size={50} color="black" />
+        </TouchableOpacity>
+        <TextInput
+          placeholder="Post a requirement"
+          style={styles.inputField}
+          onChangeText={setPostText}
+          value={postText}
+        />
+        <TouchableOpacity
+          style={styles.postButton}
+          onPress={handlePostButtonClick}
+        >
+          <Text style={styles.postText}>Post</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.header2}>
         <View style={styles.searchContainer}>
@@ -114,45 +156,88 @@ const Home_Page = () => {
           <Ionicons name="person-circle-outline" size={45} color="black" />
         </TouchableOpacity>
 
-        <View style={styles.professionFilter}>
-          <View style={styles.dropdownButtonContainer}>
-            <SelectDropdown
-              data={professions}
-              onSelect={(selectedItem, index) => {
-                setSelectedProfession(selectedItem);
-                setShowUser(true);
-              }}
-              buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-              rowTextForSelection={(item, index) => item}
-              dropdownStyle={styles.dropdown}
-            />
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => {
+            auth.signOut().then(() => {
+              console.log("User logged out");
+              setUser(null);
+              navigation.navigate("LoginPage");
+            });
+          }}
+        >
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
 
-            {showUser ? (
-              selectedProfession !== "All" ? (
-                <Backend_Data profession={selectedProfession} uid={loggedinId} />
-              ) : (
-                <Backend_Data uid={loggedinId} />
-              )
-            ) : (
-              <Backend_Data profession="" uid={loggedinId} />
-            )}
-          </View>
+      {/* Body of the home screen */}
+      <View style={styles.professionFilter}>
+        <View style={styles.dropdownButtonContainer}>
+          <SelectDropdown
+            data={professions}
+            onSelect={(selectedItem, index) => {
+              setSelectedProfession(selectedItem);
+              setShowUser(true);
+            }}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+            dropdownStyle={styles.dropdown}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleViewjob}>
+            <Text style={styles.buttonText}>View Jobs</Text>
+          </TouchableOpacity>
         </View>
+
+        {showUser ? (
+          selectedProfession !== "All" ? (
+            <Backend_Data profession={selectedProfession} uid={loggedinId} />
+          ) : (
+            <Backend_Data uid={loggedinId} />
+          )
+        ) : (
+          <Backend_Data profession="" uid={loggedinId} />
+        )}
+
+
       </View>
     </View>
   );
-};
-
-export default Home_Page;
+}
 
 const styles = StyleSheet.create({
+  // buttonContainer: {
+  //   position: 'absolute',
+  //   bottom: 0,
+  //   alignSelf: 'center',
+  //   marginBottom: 5,
+  // },
+  // button: {
+  //   backgroundColor: '#007AFF',
+  //   borderRadius: 50,
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 20,
+
+  // },
+  // buttonText: {
+  //   color: 'white',
+  //   fontSize: 12,
+  //   fontWeight: 'bold',
+  // },
   container: {
     flex: 1,
     display: "flex",
     position: "relative",
     backgroundColor: "#fff",
   },
-
+  logoutButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "red",
+  },
+  logoutText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   header: {
     display: "flex",
     flexDirection: "row",
@@ -171,7 +256,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
   },
-
+  menuButton: {
+    marginLeft: 0,
+  },
   fullScreen: {
     flex: 1,
     alignItems: "stretch",
@@ -218,7 +305,30 @@ const styles = StyleSheet.create({
   profileButton: {
     marginRight: 10, // added margin right
   },
-
+  inputField: {
+    backgroundColor: "#EFEEF9",
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    flex: 1,
+    marginLeft: 10,
+    marginRight: 10,
+    height: 40, // added height
+  },
+  postButton: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    alignItems: "center", // added align items
+    justifyContent: "center", // added justify content
+    width: 70, // added width
+    height: 30, // added height
+  },
+  postText: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
   dropdown: {
     maxHeight: 200,
   },
@@ -239,4 +349,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: "#ccc",
   },
+  button: {
+    backgroundColor: "#3f51b5",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
+
+export default Home_Page;
