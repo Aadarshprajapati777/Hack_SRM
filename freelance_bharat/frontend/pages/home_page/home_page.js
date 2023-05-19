@@ -74,8 +74,9 @@ const Home_Page = () => {
     }
   }, []);
 
-  const handleSearchInput = (text) => {
-    setSearchInput(text);
+  const handleSearchInput = (searchInput) => {
+    setSelectedProfession(searchInput);
+    setShowUser(true);
   };
 
   const handleLocationClick = () => {
@@ -135,7 +136,7 @@ const Home_Page = () => {
       </View>
 
       <View style={styles.header2}>
-        <View style={styles.searchContainer}>
+      <View style={styles.searchContainer}>
           <Ionicons name="search" size={24} color="black" />
           <TextInput
             placeholder="Search"
@@ -162,7 +163,7 @@ const Home_Page = () => {
             auth.signOut().then(() => {
               console.log("User logged out");
               setUser(null);
-              navigation.navigate("LoginPage");
+              navigation.navigate("Login_Page");
             });
           }}
         >
