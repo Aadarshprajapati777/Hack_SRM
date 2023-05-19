@@ -7,6 +7,8 @@ import { getFirestore, collection, addDoc,getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "firebase/firestore";
 import { FlatList,ActivityIndicator } from "react-native";
+import { Image } from "react-native";
+
 
 
 const Backend_Data = () => {
@@ -24,12 +26,12 @@ const Backend_Data = () => {
       const storage = getStorage();
       const userData = await Promise.all(
         querySnapshot.docs.map(async (doc) => {
-          const profileImageUrl = await getDownloadURL(
-            ref(storage, doc.data().imageUrl)
-          );
+        //   const profileImageUrl = await getDownloadURL(
+        //     ref(storage, doc.data().imageUrl)
+        //   );
           return {
             name: doc.data().fullName,
-            profile_image: profileImageUrl,
+            // profile_image: profileImageUrl,
             address: doc.data().address,
             profession: doc.data().profession,
             contact: doc.data().phoneNumber,
