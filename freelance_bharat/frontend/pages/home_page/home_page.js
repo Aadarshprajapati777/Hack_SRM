@@ -8,10 +8,13 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
-
+import { getAuth } from "firebase/auth";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
-
+import { firebase } from "../../../backend/firebase/firebase_config";
 import Backend_Data from "../../../backend/firebase/backend_data";
+const auth = getAuth(firebase);
+const firestore = getFirestore(firebase);
 
 const Home_Page = () => {
   const navigation = useNavigation();
@@ -31,27 +34,59 @@ const Home_Page = () => {
     "Others",
   ];
   const [selectedProfession, setSelectedProfession] = useState("");
-
+  const [showUser, setShowUser] = useState(false);
+  const [loggedinId, setLoggedinId] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [user, setUser] = useState(null);
 
-    const handleSearchInput = (text) => {
-    setSearchInput(text);   
-    };
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      setLoggedinId(user.uid);
+      console.log("user is signed in", user.uid);
+      const usersRef = collection(firestore, "users");
+      const queryRef = query(usersRef, where("userId", "==", user.uid));
+      console.log("queryRef", queryRef);
+      getDocs(queryRef)
+        .then((querySnapshot) => {
+          if (querySnapshot.docs.length === 1) {
+            console.log(
+              "current logged in user's collection data",
+              querySnapshot.docs[0].data()
+            );
+            setUser(querySnapshot.docs[0].id);
+          } else {
+            console.error(
+              "Error getting user data: no matching documents found"
+            );
+            setUser(null);
+          }
+        })
+        .catch((error) => {
+          console.error("Error getting user data:", error);
+          setUser(null);
+        });
+    } else {
+      console.log("user is not signed in");
+      setUser(null);
+    }
+  }, []);
 
+  const handleSearchInput = (text) => {
+    setSearchInput(text);
+  };
 
-    const handleLocationClick = () => {
+  const handleLocationClick = () => {
     alert("Location Clicked");
-    };
+  };
 
-    const handleProfileButtonClick = () => {
+  const handleProfileButtonClick = () => {
     alert("Profile Button Clicked");
-    };
+  };
 
-    const handleProfessionFilter = () => {
+  const handleProfessionFilter = () => {
     alert("Profession Filter Clicked");
-    };
-
-
+  };
 
   return (
     <View style={styles.container}>
@@ -79,28 +114,36 @@ const Home_Page = () => {
           <Ionicons name="person-circle-outline" size={45} color="black" />
         </TouchableOpacity>
 
-      <View style={styles.professionFilter}>
-        <View style={styles.dropdownButtonContainer}>
-      <SelectDropdown
-        data={professions}
-        onSelect={(selectedItem, index) => {
-          setSelectedProfession(selectedItem);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-        rowTextForSelection={(item, index) => item}
-        dropdownStyle={styles.dropdown}
-      />
-        </View> 
-     </View>
-      <Backend_Data />
-    </View>
-    </View>
+        <View style={styles.professionFilter}>
+          <View style={styles.dropdownButtonContainer}>
+            <SelectDropdown
+              data={professions}
+              onSelect={(selectedItem, index) => {
+                setSelectedProfession(selectedItem);
+                setShowUser(true);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+              rowTextForSelection={(item, index) => item}
+              dropdownStyle={styles.dropdown}
+            />
 
+            {showUser ? (
+              selectedProfession !== "All" ? (
+                <Backend_Data profession={selectedProfession} uid={loggedinId} />
+              ) : (
+                <Backend_Data uid={loggedinId} />
+              )
+            ) : (
+              <Backend_Data profession="" uid={loggedinId} />
+            )}
+          </View>
+        </View>
+      </View>
+    </View>
   );
 };
 
 export default Home_Page;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -176,8 +219,6 @@ const styles = StyleSheet.create({
     marginRight: 10, // added margin right
   },
 
-
-
   dropdown: {
     maxHeight: 200,
   },
@@ -198,5 +239,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: "#ccc",
   },
-
 });
