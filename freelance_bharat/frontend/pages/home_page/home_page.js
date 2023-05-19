@@ -85,9 +85,17 @@ const Home_Page = () => {
     alert("Location Clicked");
   };
 
-  const handleViewjob = () => {
-    alert("View Job Button Clicked");
-    };
+  const handleViewjob = async() => {
+    try {
+        const postsQuery = query(collection(firestore, "posts"));
+        const querySnapshot = await getDocs(postsQuery);
+        const posts = querySnapshot.docs.map((doc) => doc.data());
+        console.log("posts: ", posts);
+        navigation.navigate("PostsPage", { posts: posts });
+      } catch (e) {
+        console.error("Error fetching posts: ", e);
+      }
+        };
 
 
 
