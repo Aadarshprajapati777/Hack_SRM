@@ -9,38 +9,35 @@ import Home_Page from "./frontend/pages/home_page/home_page.js";
 const Stack = createNativeStackNavigator();
 
 const MyStack = () => {
-   return (
+  return (
     <NavigationContainer>
-    <Stack.Navigator>
-    <Stack.Screen
-        name="Landing_Page"
-        component={Landing_Page}
-        options={{ title: "LandingPage" }}
-      />
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Signup_Page"
+          component={Signup_Page}
+          options={{ title: "SignupPage" }}
+        />
 
-      <Stack.Screen
-        name="Login_Page"
-        component={Login_Page}
-        options={{ title: "LoginPage" }}
-      />
+        <Stack.Screen
+          name="Landing_Page"
+          component={Landing_Page}
+          options={{ title: "LandingPage" }}
+        />
 
-      <Stack.Screen
-        name="Signup_Page"
-        component={Signup_Page}
-        options={{ title: "SignupPage" }}
-      />
+        <Stack.Screen
+          name="Login_Page"
+          component={Login_Page}
+          options={{ title: "LoginPage" }}
+        />
 
-      <Stack.Screen
-        name="Home_Page"
-        component={Home_Page}
-        options={{ title: "HomePage" }}
-      />
-
-    </Stack.Navigator>
-  </NavigationContainer>
+        <Stack.Screen
+          name="Home_Page"
+          component={Home_Page}
+          options={{ title: "HomePage" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
 export default MyStack;
-
-
