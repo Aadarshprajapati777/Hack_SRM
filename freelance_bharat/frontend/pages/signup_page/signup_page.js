@@ -35,14 +35,7 @@ const Signup_Page = () => {
         navigation.navigate("Login_Page");
     };
     const handleRegisterButtonPress = () => {
-        const socket = SocketIO("http://localhost:3000");
-        socket.emit('signup', {
-            fullName,
-            address,
-            contactNumber,
-            password,
-            email,
-        });
+
 
         setFullName("");
         setAddress("");
