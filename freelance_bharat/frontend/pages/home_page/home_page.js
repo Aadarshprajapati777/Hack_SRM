@@ -50,7 +50,7 @@ const Home_Page = () => {
     const handleProfessionFilter = () => {
     alert("Profession Filter Clicked");
     };
-    
+
 
 
   return (
@@ -99,6 +99,8 @@ const Home_Page = () => {
   );
 };
 
+export default Home_Page;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -107,15 +109,14 @@ const styles = StyleSheet.create({
     position: "relative",
     backgroundColor: "#fff",
   },
-  professionFilter: {
-    padding: 10,
-    backgroundColor: "#fff",
-  },
-  dropdownButtonContainer: {
+
+  header: {
+    display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
+    justifyContent: "space-around",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   header2: {
     display: "flex",
@@ -126,6 +127,19 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10,
     paddingBottom: 10,
+  },
+
+  fullScreen: {
+    flex: 1,
+    alignItems: "stretch",
+    justifyContent: "center",
+  },
+  professionFilter: {
+    right: 5,
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 30,
+    overflow: "hidden",
   },
   searchContainer: {
     display: "flex",
@@ -144,9 +158,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     fontSize: 16, // added font size
   },
-  profileButton: {
-    marginRight: 10, // added margin right
-  },
   locationContainer: {
     display: "flex",
     flexDirection: "row",
@@ -161,12 +172,31 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  profileButton: {
+    marginRight: 10, // added margin right
+  },
+
+
+
+  dropdown: {
+    maxHeight: 200,
+  },
 
   professionFilter: {
     padding: 10,
     backgroundColor: "#fff",
   },
+  dropdownButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  dropdown: {
+    marginTop: 5,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: "#ccc",
+  },
 
 });
-
-export default Home_Page;
