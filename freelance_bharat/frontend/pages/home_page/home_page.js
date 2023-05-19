@@ -9,7 +9,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs,getDoc,doc,addDoc } from "firebase/firestore";
+
+
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../../backend/firebase/firebase_config";
 import Backend_Data from "../../../backend/firebase/backend_data";
@@ -101,9 +103,58 @@ const Home_Page = () => {
     alert("Menu Button Clicked");
     };
 
-    const handlePostButtonClick = () => {
-    alert("Post Button Clicked");
-    };
+
+
+
+    const handlePostButtonClick = async () => {
+        if (!user) {
+          alert("Please sign in to post");
+          return;
+        }
+    
+        try {
+          let phoneNumber = "";
+          console.log(" checking user", user);
+          const Ref = doc(firestore, "users", user);
+          const docSnap = await getDoc(Ref);
+          const userData = docSnap.data();
+          console.log("user data", userData);
+            let fullName = "";  
+
+    
+          if (!userData) {
+            alert("Please sign in to post");
+            return;
+          }
+
+    
+          phoneNumber = userData.phoneNumber;
+          fullName = userData.fullName;
+          console.log("phone number", phoneNumber);
+          const post = {
+            user: user,
+            text: postText,
+            date: new Date(),
+            phoneNumber: phoneNumber,
+            fullName: fullName,
+          };
+          if (postText.length !== 0) {
+            const docRef = await addDoc(collection(firestore, "posts"), post);
+            console.log("posted", postText);
+            console.log("user", user);
+            console.log("phone", phoneNumber);
+            console.log("Document written with ID: ", docRef.id);
+            setPostText("");
+          } else {
+            Alert.alert("Please enter a post");
+          }
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      };
+
+
+
 
     const handlePostText = (text) => {
     setPostText(text);  
