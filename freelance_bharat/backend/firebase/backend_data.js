@@ -26,12 +26,12 @@ const Backend_Data = () => {
       const storage = getStorage();
       const userData = await Promise.all(
         querySnapshot.docs.map(async (doc) => {
-        //   const profileImageUrl = await getDownloadURL(
-        //     ref(storage, doc.data().imageUrl)
-        //   );
+          const profileImageUrl = await getDownloadURL(
+            ref(storage, doc.data().imageUrl)
+          );
           return {
             name: doc.data().fullName,
-            // profile_image: profileImageUrl,
+            profile_image: profileImageUrl,
             address: doc.data().address,
             profession: doc.data().profession,
             contact: doc.data().phoneNumber,
