@@ -17,6 +17,8 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "firebase/firestore";
 import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
+
 
 const firebaseStore = getFirestore(firebase);
 const auth = getAuth(firebase);
@@ -46,7 +48,10 @@ const Signup_Page = () => {
     profession: "",
     email: "",
     profilePicture: "",
+
   });
+  const [image, setImage] = useState("");
+
 
   const { fullName, address, contactNumber, password, profession, email } =
     data;
@@ -67,9 +72,25 @@ const Signup_Page = () => {
       contactNumber &&
       profession &&
       password &&
-      email
+      email &&
+      image.uri
+
     ) {
       try {
+
+
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+
+        console.log("bolb", blob);
+
+        const imageRef = ref(storage, `uploads/images/${new Date().getTime()}`);
+        await uploadBytes(imageRef, blob);
+        const downloadURL = await getDownloadURL(imageRef);
+        console.log("Image uploaded successfully! URL: ", downloadURL);
+
+
+
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -84,6 +105,7 @@ const Signup_Page = () => {
           password: password,
           profession: profession,
           email: email,
+          imageUrl: imageRef.fullPath,
           userId: user.uid,
         });
         console.log("Document written with ID: ", docRef.id);
@@ -96,8 +118,21 @@ const Signup_Page = () => {
     }
   };
 
-  const handleUploadImage = () => {
-    alert("Upload Image");
+  const handleUploadImage = async () => {
+    try {
+      const imagePickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+
+      if (!imagePickerResult.canceled) {
+        setImage(imagePickerResult);
+      }
+    } catch (error) {
+      console.error("Error uploading image: ", error);
+    }
   };
 
   const { width } = useWindowDimensions();
