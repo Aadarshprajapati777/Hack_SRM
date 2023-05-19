@@ -12,18 +12,43 @@ import {
   
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import SocketIO from "socket.io-client";
+
 
 
 
 
 const Signup_Page = () => {
+
+
+    const [fullName, setFullName] = useState("");
+    const [address, setAddress] = useState("");
+    const [contactNumber, setContactNumber] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+
+
+
     const navigation = useNavigation();
 
     const handleLoginButtonPress = () => {
         navigation.navigate("Login_Page");
     };
     const handleRegisterButtonPress = () => {
-        navigation.navigate("Home_Page");
+        const socket = SocketIO("http://localhost:3000");
+        socket.emit('signup', {
+            fullName,
+            address,
+            contactNumber,
+            password,
+            email,
+        });
+
+        setFullName("");
+        setAddress("");
+        setContactNumber("");
+        setPassword("");
+        setEmail("");
     };
 
     const handleUploadImage = () => {
@@ -34,11 +59,6 @@ const Signup_Page = () => {
     const { width } = useWindowDimensions();
     const formStyle = width >= 768 ? styles.formLarge : styles.formSmall;
 
-    const [fullName, setFullName] = useState("");
-    const [address, setAddress] = useState("");
-    const [contactNumber, setContactNumber] = useState("");
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
 
     
     return (
@@ -49,18 +69,21 @@ const Signup_Page = () => {
           style={styles.input}
           placeholder="Full Name"
           value={fullName}
+          onChangeText={(text) => setFullName(text)}
         />
         <TextInput
           style={styles.input}
           styles={styles.form}
           placeholder="Address"
           value={address}
+          onChangeText={(text) => setAddress(text)}   
         />
         <TextInput
           style={styles.input}
           placeholder="Contact Number"
           value={contactNumber}
           keyboardType="phone-pad"
+            onChangeText={(text) => setContactNumber(text)}
         />
         <TextInput
           style={styles.input}
@@ -68,6 +91,7 @@ const Signup_Page = () => {
 
           value={password}
           secureTextEntry={true}
+            onChangeText={(text) => setPassword(text)}
         />
 
         <TextInput
@@ -75,6 +99,9 @@ const Signup_Page = () => {
           placeholder="Email"
           value={email}
           keyboardType="email-address"
+            autoCapitalize="none"
+            onChangeText={(text) => setEmail(text)}
+
         />
         <TouchableOpacity
           style={styles.uploadButton}
