@@ -75,11 +75,11 @@ const Login_Page = () => {
         </TouchableOpacity>
         <View style={styles.signupSection}>
           <Text style={styles.signupText}>Don't have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignupPage")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Signup_Page")}>
             <Text style={styles.signupButton}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("HomeScreen" )}>
+        <TouchableOpacity onPress={() => navigation.navigate("Home_Page" )}>
             <Text style={styles.homescreen}>continue without login</Text>
           </TouchableOpacity>
       </View>
