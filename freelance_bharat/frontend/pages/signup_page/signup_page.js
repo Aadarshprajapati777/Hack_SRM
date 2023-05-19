@@ -16,10 +16,24 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "firebase/firestore";
+import { Picker } from "@react-native-picker/picker";
 
 const firebaseStore = getFirestore(firebase);
 const auth = getAuth(firebase);
 const storage = getStorage(firebase);
+
+const professions = [
+  "Select Your Profession",
+  "Ambulance Driver",
+  "Doctor",
+  "Nurse",
+  "Pharmacist",
+  "Police",
+  "web Developer",
+  "software Engineer",
+  "security Guard",
+  "Others",
+];
 
 const Signup_Page = () => {
   const navigation = useNavigation();
@@ -51,6 +65,7 @@ const Signup_Page = () => {
       fullName &&
       address &&
       contactNumber &&
+      profession &&
       password &&
       email
     ) {
@@ -67,12 +82,12 @@ const Signup_Page = () => {
           address: address,
           phoneNumber: contactNumber,
           password: password,
-          // profession: profession,
+          profession: profession,
           email: email,
           userId: user.uid,
         });
         console.log("Document written with ID: ", docRef.id);
-        navigation.navigate("LoginPage"); 
+        navigation.navigate("LoginPage");
       } catch (error) {
         console.error("Error registering user: ", error);
       }
@@ -137,14 +152,27 @@ const Signup_Page = () => {
           value={email}
           keyboardType="email-address"
         />
+
+        <View style={styles.pickerContainer}>
+          <Picker
+            style={styles.picker}
+            selectedValue={profession}
+            onValueChange={(itemValue, itemIndex) =>
+              handleRegistrationFormInputChange("profession", itemValue)
+            }
+          >
+            {professions.map((item, index) => (
+              <Picker.Item key={index} label={item} value={item} />
+            ))}
+          </Picker>
+        </View>
+
         <TouchableOpacity
           style={styles.uploadButton}
           onPress={handleUploadImage}
         >
           <Text style={styles.uploadButtonText}>upload photo</Text>
         </TouchableOpacity>
-
-        
 
         <TouchableOpacity
           style={styles.registerButton}
