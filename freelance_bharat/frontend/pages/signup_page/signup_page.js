@@ -87,7 +87,7 @@ const Signup_Page = () => {
           userId: user.uid,
         });
         console.log("Document written with ID: ", docRef.id);
-        navigation.navigate("LoginPage");
+        navigation.navigate("Login_Page");
       } catch (error) {
         console.error("Error registering user: ", error);
       }
