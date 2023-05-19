@@ -51,74 +51,68 @@ const UserProfile = ({ route }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      paddingTop: 20,
-      backgroundColor: "#FF00FF",
-    },
-    topRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      paddingHorizontal: 20,
-      backgroundColor: "#00FFFF",
-    },
-    imageContainer: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      overflow: "hidden",
-      marginBottom: 20,
-      backgroundColor: "#FFFF00",
-    },
-    image: {
-      width: "100%",
-      height: "100%",
-      resizeMode: "cover",
-      borderRadius: 60,
-      borderColor: "#5B5B5B",
-      borderWidth: 2,
-    },
-    name: {
-      fontSize: 10,
-      fontWeight: "normal",
-      marginBottom: 10,
-      color: "#FF0000",
-    },
-    iconContainer: {
-      flexDirection: "row",
-      justifyContent: "space-around",
-      alignItems: "center",
-      width: "40%",
-      marginBottom: 20,
-      backgroundColor: "#0000FF",
-    },
-    address: {
-      fontSize: 14,
-      color: "#00FF00",
-      marginBottom: 5,
-    },
-    ratings: {
-      fontSize: 16,
-      fontWeight: "bold",
-      marginLeft: 5,
-      color: "#FFFFFF",
-    },
-    postsContainer: {
-      flex: 1,
-      width: "100%",
-      paddingHorizontal: 20,
-      backgroundColor: "#FF0000",
-    },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: 20,
+  },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  imageContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    overflow: "hidden",
+    marginBottom: 20,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    borderRadius: 60,
+    borderColor: "#5B5B5B",
+    borderWidth: 2,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "40%",
+    marginBottom: 20,
+  },
+  address: {
+    fontSize: 16,
+    color: "#5B5B5B",
+    marginBottom: 5,
+  },
+  ratings: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginLeft: 5,
+  },
+  postsContainer: {
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: 20,
+  },
     profession: {
-      fontSize: 12,
-      color: "#000000",
-      marginBottom: 5,
+    fontSize: 19,
+    color: "#5B5B5B",
+    marginBottom: 5,
     },
-  });
-  
+
+});
 
 export default UserProfile;
