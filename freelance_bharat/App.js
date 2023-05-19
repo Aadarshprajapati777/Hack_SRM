@@ -6,7 +6,7 @@ import Login_Page from "./frontend/pages/login_page/login_page.js";
 import Signup_Page from "./frontend/pages/signup_page/signup_page.js";
 import Home_Page from "./frontend/pages/home_page/home_page.js";
 import UserProfile from "./frontend/profile/user_profile/user_profile.js";
-import PostsPage from "./frontend/pages/viewjob_page/viewjob.js";
+import Posts from "./frontend/pages/viewjob_page/posts.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,13 +14,25 @@ const MyStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+
+
+
+
+      <Stack.Screen
+          name="Landing_Page"
+          component={Landing_Page}
+          options={{ title: "LandingPage" }}
+        />
+
+
+        
         <Stack.Screen
           name="Home_Page"
           component={Home_Page}
           options={{ title: "HomePage" }}
         />
 
-        <Stack.Screen name="Posts" component={PostsPage} />
+        <Stack.Screen name="Posts" component={Posts} />
 
         <Stack.Screen
           name="Signup_Page"
@@ -33,11 +45,7 @@ const MyStack = () => {
           options={{ title: "UserProfile" }}
         />
 
-        <Stack.Screen
-          name="Landing_Page"
-          component={Landing_Page}
-          options={{ title: "LandingPage" }}
-        />
+
 
         <Stack.Screen
           name="Login_Page"

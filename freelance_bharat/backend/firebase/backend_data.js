@@ -79,74 +79,74 @@ const Backend_Data = (props) => {
         Linking.openURL(messageUrl);
       };
     
-      const renderItem = ({ item }) => (
-    
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 20,
-          }}
+     
+  const renderItem = ({ item }) => (
+
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 20,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("UserProfile", { state: item })}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("UserProfile", { state: item })}
-            >
-    <View style={{ overflow: "hidden", borderRadius: 50, marginLeft: 10, position: "relative" }}>
-      <Image
-        style={[{ width: 50, height: 50, borderRadius: 50 }]}
-        source={{ uri: item.profile_image }}
-      />
-      {item.userId === uid && (
-        <View style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: 50,
-          height: 50,
-          borderRadius: 50,
-          borderColor: "green",
-          borderWidth: 5
-        }}>
-        </View>
-      )}
+<View style={{ overflow: "hidden", borderRadius: 50, marginLeft: 10, position: "relative" }}>
+  <Image
+    style={[{ width: 50, height: 50, borderRadius: 50 }]}
+    source={{ uri: item.profile_image }}
+  />
+  {item.userId === uid && (
+    <View style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: 50,
+      height: 50,
+      borderRadius: 50,
+      borderColor: "green",
+      borderWidth: 5
+    }}>
     </View>
-    
-    
-    
-            </TouchableOpacity>
-    
-            <TouchableOpacity>
-              <View
-                style={{
-                  marginLeft: 10,
-                  width: 215,
-                }}
-              >
-                <Text style={{ fontSize: 17 }}>{item.name}</Text>
-    
-                <Text style={{ fontSize: 11, color: "grey" }}>{item.address}</Text>
-              </View>
-            </TouchableOpacity>
+  )}
+</View>
+
+
+
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <View
+            style={{
+              marginLeft: 10,
+              width: 215,
+            }}
+          >
+            <Text style={{ fontSize: 17 }}>{item.name}</Text>
+
+            <Text style={{ fontSize: 11, color: "grey" }}>{item.address}</Text>
           </View>
-          <View style={{ flexDirection: "row" }}>
-            <TouchableOpacity
-              style={{ marginRight: 20 }}
-              onPress={() => handCallClick(item.contact)}
-            >
-              <Icon name="phone" size={25} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ marginRight: 20 }}
-              onPress={() => handleMessageClick(item.contact)}
-            >
-              <Icon name="comment" size={25} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    
+        </TouchableOpacity>
+      </View>
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ marginRight: 20 }}
+          onPress={() => handCallClick(item.contact)}
+        >
+          <Icon name="phone" size={25} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginRight: 20 }}
+          onPress={() => handleMessageClick(item.contact)}
+        >
+          <Icon name="comment" size={25} color="black" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
   const renderFooter = () => {
     if (loading) {
       return (

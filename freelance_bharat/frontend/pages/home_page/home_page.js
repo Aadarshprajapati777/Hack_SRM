@@ -91,7 +91,7 @@ const Home_Page = () => {
         const querySnapshot = await getDocs(postsQuery);
         const posts = querySnapshot.docs.map((doc) => doc.data());
         console.log("posts: ", posts);
-        navigation.navigate("PostsPage", { posts: posts });
+        navigation.navigate("Posts", { posts: posts });
       } catch (e) {
         console.error("Error fetching posts: ", e);
       }

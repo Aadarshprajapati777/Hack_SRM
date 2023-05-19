@@ -1,7 +1,6 @@
 import React from "react";
 import { FlatList, Text, TouchableOpacity } from "react-native";
 import { View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Linking } from "react-native";
 
