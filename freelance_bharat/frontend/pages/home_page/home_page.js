@@ -10,7 +10,8 @@ import { Ionicons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, query, where, getDocs,getDoc,doc,addDoc } from "firebase/firestore";
-
+import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
 
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../../backend/firebase/firebase_config";
@@ -41,7 +42,23 @@ const Home_Page = () => {
   const [searchInput, setSearchInput] = useState("");
   const [user, setUser] = useState(null);
   const [postText, setPostText] = useState("");
+  const [location, setLocation] = useState(null);
 
+
+  useEffect(() => {
+    getLocationAsync();
+  }, []);
+
+  const getLocationAsync = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied.');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+  };
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -82,7 +99,21 @@ const Home_Page = () => {
   };
 
   const handleLocationClick = () => {
-    alert("Location Clicked");
+
+    console.log("location", location);
+    if (location) {
+      const { latitude, longitude } = location.coords;
+      Geocoder.from(latitude, longitude)
+        .then((response) => {
+          const address = response.results[0].formatted_address;
+          // Store the selected location and perform further actions
+          // E.g., send the location to a backend API, retrieve data, etc.
+          console.log('Selected Location:', address);
+          // Navigate to the screen showing registered users within 10km radius
+          navigation.navigate('UsersScreen', { latitude, longitude });
+        })
+        .catch((error) => console.warn(error));
+    }
   };
 
   const handleViewjob = async() => {
