@@ -3,6 +3,8 @@ import { View, Text } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 
 const UsersScreen = ({ route }) => {
+
+    console.log("in userscreen")
   const { latitude, longitude } = route.params;
   const [users, setUsers] = useState([]);
 

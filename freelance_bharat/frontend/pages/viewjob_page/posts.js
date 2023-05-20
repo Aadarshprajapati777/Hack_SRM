@@ -64,51 +64,74 @@ const Posts = ({ route, navigation }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: "#C7C6CE",
+    backgroundColor: '#F5F5F5',
+    padding: 20,
   },
   postContainer: {
-    backgroundColor: "#f44336",
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    margin: 10,
-    padding: 10,
+    marginBottom: 20,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   postHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
-  userId: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
+  userAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
+userId: {
+  color: '#333333',
+  fontWeight: 'bold',
+  fontSize: 22,
+  marginTop: 5,
+  borderBottomWidth: 2,
+  borderBottomColor: '#f44336',
+  paddingBottom: 4, // Add padding to create space between the text and border
+  fontFamily: 'Roboto', // Apply a custom font if desired
+},
+
+
+
   postBody: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 12,
   },
   postText: {
-    color: "#f44336",
-    fontSize: 20,
-    fontWeight: "bold",
+    color: '#333333',
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
   iconButton: {
-    backgroundColor: "#f44336",
+    backgroundColor: '#FF4081',
     borderRadius: 5,
-    padding: 5,
-    width: 100,
-    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: 'center',
   },
   icon: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#FFFFFF',
     fontSize: 24,
+    fontWeight: 'bold',
   },
 };
 

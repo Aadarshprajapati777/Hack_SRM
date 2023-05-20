@@ -9,9 +9,20 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, query, where, getDocs,getDoc,doc,addDoc } from "firebase/firestore";
-import * as Location from 'expo-location';
-import Geocoder from 'react-native-geocoding';
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
+import * as Location from "expo-location";
+// import { Geocoder } from 'react-native-geocoding';
+
+import Geocoder from "react-native-geocoding";
 
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../../backend/firebase/firebase_config";
@@ -21,9 +32,7 @@ const firestore = getFirestore(firebase);
 
 const Home_Page = () => {
   const navigation = useNavigation();
-
   console.log("HomeScreen");
-
   const professions = [
     "All",
     "Ambulance Driver",
@@ -36,6 +45,7 @@ const Home_Page = () => {
     "security Guard",
     "Others",
   ];
+
   const [selectedProfession, setSelectedProfession] = useState("");
   const [showUser, setShowUser] = useState(false);
   const [loggedinId, setLoggedinId] = useState("");
@@ -43,23 +53,78 @@ const Home_Page = () => {
   const [user, setUser] = useState(null);
   const [postText, setPostText] = useState("");
   const [location, setLocation] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [nearbyUsers, setNearbyUsers] = useState([]);
 
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance; // Distance in kilometers
+  };
+
+  const handleLocationClick = async () => {
+    if (location) {
+      const { latitude, longitude } = location.coords;
+
+      try {
+        const usersQuery = query(collection(firestore, "users"));
+        const querySnapshot = await getDocs(usersQuery);
+        const users = querySnapshot.docs.map((doc) => doc.data());
+
+        // Filter users within a 10km radius
+        const nearbyUsers = users.filter((user) => {
+          console.log("User:", user);
+          console.log("User latitude:", latitude);
+          console.log("User longitude:", longitude);
+          console.log("Other user latitude:", user.userlocation.coords.latitude);
+          console.log("Other user longitude:", user.userlocation.coords.longitude);
+
+          const distance = calculateDistance(
+            latitude,
+            longitude,
+            user.userlocation.coords.latitude,  
+            user.userlocation.coords.longitude
+
+          );
+          console.log("distance", distance);
+          return distance <= 100; // Check if the distance is less than or equal to 10km
+        });
+         
+        console.log("nearbyUsers", nearbyUsers);
+        setNearbyUsers(nearbyUsers);
+      } catch (error) {
+        console.error("Error fetching nearby users:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     getLocationAsync();
   }, []);
 
   const getLocationAsync = async () => {
+    console.log("in getLocationAsync and location is", location);
     if (location === null || location === undefined) {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Permission to access location was denied.');
-      return;
-    }    
+      console.log("in if condition location is", location);
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied.");
+        return;
+      }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    console.log("location", location);
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("location", location);
     }
   };
 
@@ -67,7 +132,7 @@ const Home_Page = () => {
     const user = auth.currentUser;
     if (user) {
       setLoggedinId(user.uid);
-      
+
       console.log("user is signed in", user.uid);
       const usersRef = collection(firestore, "users");
       const queryRef = query(usersRef, where("userId", "==", user.uid));
@@ -93,7 +158,6 @@ const Home_Page = () => {
         });
     } else {
       console.log("user is not signed in");
-      setLocation(null);
       setUser(null);
     }
   }, []);
@@ -103,37 +167,17 @@ const Home_Page = () => {
     setShowUser(true);
   };
 
-  const handleLocationClick = () => {
-
-    if (location) {
-      console.log("location", location);
-      const { latitude, longitude } = location.coords;
-      Geocoder.from(latitude, longitude)
-        .then((response) => {
-          const address = response.results[0].formatted_address;
-          // Store the selected location and perform further actions
-          // E.g., send the location to a backend API, retrieve data, etc.
-          console.log('Selected Location:', address);
-          // Navigate to the screen showing registered users within 10km radius
-          navigation.navigate('UsersScreen', { latitude, longitude });
-        })
-        .catch((error) => console.warn(error));
+  const handleViewjob = async () => {
+    try {
+      const postsQuery = query(collection(firestore, "posts"));
+      const querySnapshot = await getDocs(postsQuery);
+      const posts = querySnapshot.docs.map((doc) => doc.data());
+      console.log("posts: ", posts);
+      navigation.navigate("Posts", { posts: posts });
+    } catch (e) {
+      console.error("Error fetching posts: ", e);
     }
   };
-
-  const handleViewjob = async() => {
-    try {
-        const postsQuery = query(collection(firestore, "posts"));
-        const querySnapshot = await getDocs(postsQuery);
-        const posts = querySnapshot.docs.map((doc) => doc.data());
-        console.log("posts: ", posts);
-        navigation.navigate("Posts", { posts: posts });
-      } catch (e) {
-        console.error("Error fetching posts: ", e);
-      }
-        };
-
-
 
   const handleProfileButtonClick = () => {
     alert("Profile Button Clicked");
@@ -143,69 +187,58 @@ const Home_Page = () => {
     alert("Profession Filter Clicked");
   };
 
-    const handleMenuButtonClick = () => {
+  const handleMenuButtonClick = () => {
     alert("Menu Button Clicked");
-    };
+  };
 
+  const handlePostButtonClick = async () => {
+    if (!user) {
+      alert("Please sign in to post");
+      return;
+    }
 
+    try {
+      let phoneNumber = "";
+      console.log(" checking user", user);
+      const Ref = doc(firestore, "users", user);
+      const docSnap = await getDoc(Ref);
+      const userData = docSnap.data();
+      console.log("user data", userData);
+      let fullName = "";
 
+      if (!userData) {
+        alert("Please sign in to post");
+        return;
+      }
 
-    const handlePostButtonClick = async () => {
-        if (!user) {
-          alert("Please sign in to post");
-          return;
-        }
-    
-        try {
-          let phoneNumber = "";
-          console.log(" checking user", user);
-          const Ref = doc(firestore, "users", user);
-          const docSnap = await getDoc(Ref);
-          const userData = docSnap.data();
-          console.log("user data", userData);
-            let fullName = "";  
-
-    
-          if (!userData) {
-            alert("Please sign in to post");
-            return;
-          }
-
-    
-          phoneNumber = userData.phoneNumber;
-          fullName = userData.fullName;
-          console.log("phone number", phoneNumber);
-          const post = {
-            user: user,
-            text: postText,
-            date: new Date(),
-            phoneNumber: phoneNumber,
-            fullName: fullName,
-          };
-          if (postText.length !== 0) {
-            const docRef = await addDoc(collection(firestore, "posts"), post);
-            console.log("posted", postText);
-            console.log("user", user);
-            console.log("phone", phoneNumber);
-            console.log("Document written with ID: ", docRef.id);
-            setPostText("");
-          } else {
-            Alert.alert("Please enter a post");
-          }
-        } catch (e) {
-          console.error("Error adding document: ", e);
-        }
+      phoneNumber = userData.phoneNumber;
+      fullName = userData.fullName;
+      console.log("phone number", phoneNumber);
+      const post = {
+        user: user,
+        text: postText,
+        date: new Date(),
+        phoneNumber: phoneNumber,
+        fullName: fullName,
       };
+      if (postText.length !== 0) {
+        const docRef = await addDoc(collection(firestore, "posts"), post);
+        console.log("posted", postText);
+        console.log("user", user);
+        console.log("phone", phoneNumber);
+        console.log("Document written with ID: ", docRef.id);
+        setPostText("");
+      } else {
+        Alert.alert("Please enter a post");
+      }
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
 
-
-
-
-    const handlePostText = (text) => {
-    setPostText(text);  
-    };
-
-
-
+  const handlePostText = (text) => {
+    setPostText(text);
+  };
 
   return (
     <View style={styles.container}>
@@ -231,7 +264,7 @@ const Home_Page = () => {
       </View>
 
       <View style={styles.header2}>
-      <View style={styles.searchContainer}>
+        <View style={styles.searchContainer}>
           <Ionicons name="search" size={24} color="black" />
           <TextInput
             placeholder="Search"
@@ -283,22 +316,27 @@ const Home_Page = () => {
             <Text style={styles.buttonText}>View Jobs</Text>
           </TouchableOpacity>
         </View>
-
         {showUser ? (
           selectedProfession !== "All" ? (
-            <Backend_Data profession={selectedProfession} uid={loggedinId} />
+            <Backend_Data
+              profession={selectedProfession}
+              uid={loggedinId}
+              nearbyUsers={nearbyUsers}
+            />
           ) : (
-            <Backend_Data uid={loggedinId} />
+            <Backend_Data uid={loggedinId} nearbyUsers={nearbyUsers} />
           )
         ) : (
-          <Backend_Data profession="" uid={loggedinId} />
+          <Backend_Data
+            profession=""
+            uid={loggedinId}
+            nearbyUsers={nearbyUsers}
+          />
         )}
-
-
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   // buttonContainer: {
