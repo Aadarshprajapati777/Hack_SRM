@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -10,6 +10,8 @@ import {
   useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../../backend/firebase/firebase_config";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -18,6 +20,9 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "firebase/firestore";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import * as Location from 'expo-location';
+import Geocoder from 'react-native-geocoding';
+
 
 
 const firebaseStore = getFirestore(firebase);
@@ -40,6 +45,23 @@ const professions = [
 const Signup_Page = () => {
   const navigation = useNavigation();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   const [data, setData] = useState({
     fullName: "",
     address: "",
@@ -48,12 +70,13 @@ const Signup_Page = () => {
     profession: "",
     email: "",
     profilePicture: "",
-
+    userlocation: null,
   });
   const [image, setImage] = useState("");
+  const [location, setLocation] = useState(null);
 
 
-  const { fullName, address, contactNumber, password, profession, email } =
+  const { fullName, address, contactNumber, password, profession, email, userlocation} =
     data;
 
   const handleRegistrationFormInputChange = (inputName, inputValue) => {
@@ -61,6 +84,27 @@ const Signup_Page = () => {
     updatedFormState[inputName] = inputValue;
     setData(updatedFormState);
   };
+
+
+  useEffect(() => {
+    getLocationAsync();
+  }, []);
+
+  const getLocationAsync = async () => {
+    if (location === null || location === undefined) {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.log('Permission to access location was denied.');
+      return;
+    }    
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+    console.log("location", location);
+    }
+  };
+
+
 
   const handleLoginButtonPress = () => {
     navigation.navigate("Login_Page");
@@ -73,7 +117,7 @@ const Signup_Page = () => {
       profession &&
       password &&
       email &&
-      image.uri
+      image.uri 
 
     ) {
       try {
@@ -107,6 +151,7 @@ const Signup_Page = () => {
           email: email,
           imageUrl: imageRef.fullPath,
           userId: user.uid,
+          userlocation: location,
         });
         console.log("Document written with ID: ", docRef.id);
         navigation.navigate("Login_Page");
@@ -134,6 +179,31 @@ const Signup_Page = () => {
       console.error("Error uploading image: ", error);
     }
   };
+
+
+
+
+
+  const handleLocationClick = () => {
+
+    console.log("location", location);
+    if (location) {
+      const { latitude, longitude } = location.coords;
+      Geocoder.from(latitude, longitude)
+        .then((response) => {
+          const address = response.results[0].formatted_address;
+          // Store the selected location and perform further actions
+          // E.g., send the location to a backend API, retrieve data, etc.
+          console.log('Selected Location:', address);
+          // Navigate to the screen showing registered users within 10km radius
+          navigation.navigate('UsersScreen', { latitude, longitude });
+        })
+        .catch((error) => console.warn(error));
+    }
+  };
+
+
+
 
   const { width } = useWindowDimensions();
   const formStyle = width >= 768 ? styles.formLarge : styles.formSmall;
@@ -207,6 +277,13 @@ const Signup_Page = () => {
           onPress={handleUploadImage}
         >
           <Text style={styles.uploadButtonText}>upload photo</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleLocationClick}>
+          <View >
+            <Ionicons name="location-sharp" size={24} color="black" />
+            <Text style={styles.locationText}>kerala</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity

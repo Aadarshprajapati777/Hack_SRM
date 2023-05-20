@@ -50,20 +50,24 @@ const Home_Page = () => {
   }, []);
 
   const getLocationAsync = async () => {
+    if (location === null || location === undefined) {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied.');
       return;
-    }
+    }    
 
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
+    console.log("location", location);
+    }
   };
 
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
       setLoggedinId(user.uid);
+      
       console.log("user is signed in", user.uid);
       const usersRef = collection(firestore, "users");
       const queryRef = query(usersRef, where("userId", "==", user.uid));
@@ -89,6 +93,7 @@ const Home_Page = () => {
         });
     } else {
       console.log("user is not signed in");
+      setLocation(null);
       setUser(null);
     }
   }, []);
@@ -100,8 +105,8 @@ const Home_Page = () => {
 
   const handleLocationClick = () => {
 
-    console.log("location", location);
     if (location) {
+      console.log("location", location);
       const { latitude, longitude } = location.coords;
       Geocoder.from(latitude, longitude)
         .then((response) => {
