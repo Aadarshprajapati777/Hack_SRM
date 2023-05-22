@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -9,6 +9,7 @@ import {
   ScrollView,
   useWindowDimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -20,10 +21,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "firebase/firestore";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import * as Location from 'expo-location';
-import Geocoder from 'react-native-geocoding';
-
-
+import * as Location from "expo-location";
+import Geocoder from "react-native-geocoding";
 
 const firebaseStore = getFirestore(firebase);
 const auth = getAuth(firebase);
@@ -45,23 +44,6 @@ const professions = [
 const Signup_Page = () => {
   const navigation = useNavigation();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
   const [data, setData] = useState({
     fullName: "",
     address: "",
@@ -75,9 +57,15 @@ const Signup_Page = () => {
   const [image, setImage] = useState("");
   const [location, setLocation] = useState(null);
 
-
-  const { fullName, address, contactNumber, password, profession, email, userlocation} =
-    data;
+  const {
+    fullName,
+    address,
+    contactNumber,
+    password,
+    profession,
+    email,
+    userlocation,
+  } = data;
 
   const handleRegistrationFormInputChange = (inputName, inputValue) => {
     const updatedFormState = { ...data };
@@ -85,26 +73,23 @@ const Signup_Page = () => {
     setData(updatedFormState);
   };
 
-
-  useEffect(() => {
-    getLocationAsync();
-  }, []);
+  // useEffect(() => {
+  //   getLocationAsync();
+  // }, []);
 
   const getLocationAsync = async () => {
     if (location === null || location === undefined) {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Permission to access location was denied.');
-      return;
-    }    
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied.");
+        return;
+      }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-    console.log("location", location);
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("location", location);
     }
   };
-
-
 
   const handleLoginButtonPress = () => {
     navigation.navigate("Login_Page");
@@ -117,12 +102,10 @@ const Signup_Page = () => {
       profession &&
       password &&
       email &&
-      image.uri 
-
+      image.uri &&
+      location
     ) {
       try {
-
-
         const response = await fetch(image.uri);
         const blob = await response.blob();
 
@@ -132,8 +115,6 @@ const Signup_Page = () => {
         await uploadBytes(imageRef, blob);
         const downloadURL = await getDownloadURL(imageRef);
         console.log("Image uploaded successfully! URL: ", downloadURL);
-
-
 
         const userCredential = await createUserWithEmailAndPassword(
           auth,
@@ -160,6 +141,7 @@ const Signup_Page = () => {
       }
     } else {
       console.error("Please fill all the field");
+      Alert.alert("Please fill all the field");
     }
   };
 
@@ -180,30 +162,23 @@ const Signup_Page = () => {
     }
   };
 
-
-
-
-
   const handleLocationClick = () => {
-
-    console.log("location", location);
-    if (location) {
-      const { latitude, longitude } = location.coords;
-      Geocoder.from(latitude, longitude)
-        .then((response) => {
-          const address = response.results[0].formatted_address;
-          // Store the selected location and perform further actions
-          // E.g., send the location to a backend API, retrieve data, etc.
-          console.log('Selected Location:', address);
-          // Navigate to the screen showing registered users within 10km radius
-          navigation.navigate('UsersScreen', { latitude, longitude });
-        })
-        .catch((error) => console.warn(error));
-    }
+    getLocationAsync();
   };
 
-
-
+  if (location) {
+    const { latitude, longitude } = location.coords;
+    Geocoder.from(latitude, longitude)
+      .then((response) => {
+        const address = response.results[0].formatted_address;
+        // Store the selected location and perform further actions
+        // E.g., send the location to a backend API, retrieve data, etc.
+        console.log("Selected Location:", address);
+        // Navigate to the screen showing registered users within 10km radius
+        navigation.navigate("UsersScreen", { latitude, longitude });
+      })
+      .catch((error) => console.warn(error));
+  }
 
   const { width } = useWindowDimensions();
   const formStyle = width >= 768 ? styles.formLarge : styles.formSmall;
@@ -280,9 +255,23 @@ const Signup_Page = () => {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleLocationClick}>
-          <View >
-            <Ionicons name="location-sharp" size={24} color="black" />
-            <Text style={styles.locationText}>kerala</Text>
+          <View
+            style={{
+              width: 350,
+              height: 50,
+              borderRadius: 25,
+              backgroundColor: "lightblue",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "row",
+              marginBottom: 15,
+              
+            }}
+          >
+              <Ionicons name="location-sharp" size={24} color="black" />
+              <Text style={styles.locationText}>Please tap on location icon</Text>
+
           </View>
         </TouchableOpacity>
 
@@ -403,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -448,6 +437,12 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "cover",
     borderRadius: 100,
+  },
+  locationText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#0077FF",
+    textAlign: "center",
   },
 });
 
