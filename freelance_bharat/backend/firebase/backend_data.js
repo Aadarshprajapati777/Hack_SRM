@@ -22,7 +22,6 @@ import { Image } from "react-native";
 import { Linking } from "react-native";
 
 const Backend_Data = (props) => {
-
   console.log("in backend data: ", props.nearbyUsers);
   let uid = props.uid || "";
   console.log("in user: ", uid);
@@ -60,15 +59,16 @@ const Backend_Data = (props) => {
     setLoading(false);
   };
 
-  const fetchUserDatabyLocation = async (nearbyUserid) => {
+  const fetchUserDatabyLocation = async (nearbyUserid,nearbyUserProfession) => {
+    console.log("in fetch user data by location function checking id:", nearbyUserid);
+    console.log("infetch user data by location function checking profession: ", nearbyUserProfession)
     const db = getFirestore();
     let q = collection(db, "users");
+
     if (nearbyUserid) {
       console.log("in fetch user data by location:", nearbyUserid);
-      q = query(q, where("userId", "==",nearbyUserid));
+      q = query(q, where("userId", "==", nearbyUserid));
       console.log("in fetch user data by location:", q);
-
-    }
     const querySnapshot = await getDocs(q);
     const storage = getStorage();
     const userData = await Promise.all(
@@ -88,34 +88,89 @@ const Backend_Data = (props) => {
         };
       })
     );
-    setData(userData);
-    setLoading(false);
+    return userData; // Return the new data
+    }
+
+    if(nearbyUserProfession){
+      console.log("nearbyProfession is :", nearbyUserProfession);
+      q = query(q, where("profession", "==", nearbyUserProfession));
+      console.log("in location:", q);
+
+       
+      const querySnapshot = await getDocs(q);
+      const storage = getStorage();
+      const userData = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const profileImageUrl = await getDownloadURL(
+            ref(storage, doc.data().imageUrl)
+          );
+          return {
+            name: doc.data().fullName,
+            profile_image: profileImageUrl,
+            address: doc.data().address,
+            profession: doc.data().profession,
+            contact: doc.data().phoneNumber,
+            id: doc.id,
+            userId: doc.data().userId,
+            ...doc.data(),
+          };
+        })
+      );
+      return userData; // Return the new data
+      }
   };
 
+  useEffect(() => {
+    if (props.nearbyUsers.length > 0) {
+      console.log("in nearby users condition:", props.nearbyUsers);
+      const fetchData = async () => {
+        const newData = await Promise.all(
+          props.nearbyUsers.map((item) => {
+            console.log("in map:", item.userId);
+            return fetchUserDatabyLocation(item.userId);
+          })
+        );
+        const mergedData = newData.flat(); // Merge the new data arrays into a single array
+        setData(mergedData); // Set the data state with the merged data
+        setLoading(false);
+      };
 
-useEffect(() => {
-  //if props.nearbyUsers length > 0
-
-   if(props.nearbyUsers.length > 0)
-  {
-    console.log("in nearby users condition:", props.nearbyUsers)
-    for (let i = 0; i < props.nearbyUsers.length; i++) {
-      console.log("in for loop:", props.nearbyUsers[i].userId);
-      fetchUserDatabyLocation(props.nearbyUsers[i].userId);
+      fetchData();
     }
+  }, [props.nearbyUsers]);
+
+  if (props.islocationclicked) {
+    console.log("in islocationclicked:", props.islocationclicked);
+    console.log("in  islocationclicked checking profession  ", props.profession)
+
+  
+
+    useEffect(() => {
+      console.log("in useeffect of islocationclicked checking length:", props.nearbyUsers.length) ;
+      if (props.nearbyUsers.length > 0) {
+        console.log("in nearby users condition:", props.nearbyUsers);
+        console.log("in nearby users condition:", props.profession);
+        // for (let i = 0; i < props.nearbyUsers.length; i++) {
+        //   console.log("in for loop:", props.nearbyUsers[i].userId);
+        //   fetchUserDatabyLocation(props.nearbyUsers[i].userId);
+        // }
+        props.nearbyUsers.map((item) => {
+          console.log("in map:", item.userId);
+          fetchUserDatabyLocation(item.userId, props.profession);
+        });
+      }
+    }, [props.nearbyUsers.userId]);
+  } else {
+    useEffect(() => {
+      fetchUserData(props.profession);
+    }, [props.profession]);
   }
-}, [props.nearbyUsers]);
 
-
+  
 
   // if(props.nearbyUsers){
   //   fetchUserDatabyLocation(props.nearbyUsers);
   // }
-
-
-  useEffect(() => {
-    fetchUserData(props.profession);
-  }, [props.profession]);
 
   useEffect(() => {
     console.log("UID changed:", props.uid);

@@ -56,6 +56,7 @@ const Home_Page = () => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [nearbyUsers, setNearbyUsers] = useState([]);
+  const [islocationclicked, setIslocationclicked] = useState(false);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Earth's radius in kilometers
@@ -97,11 +98,12 @@ const Home_Page = () => {
 
           );
           console.log("distance", distance);
-          return distance <= 100; // Check if the distance is less than or equal to 10km
+          return distance <= 10; // Check if the distance is less than or equal to 10km
         });
          
         console.log("nearbyUsers", nearbyUsers);
         setNearbyUsers(nearbyUsers);
+        setIslocationclicked(true);
       } catch (error) {
         console.error("Error fetching nearby users:", error);
       }
@@ -291,6 +293,7 @@ const Home_Page = () => {
             auth.signOut().then(() => {
               console.log("User logged out");
               setUser(null);
+              setIslocationclicked(false);
               navigation.navigate("Login_Page");
             });
           }}
@@ -322,15 +325,17 @@ const Home_Page = () => {
               profession={selectedProfession}
               uid={loggedinId}
               nearbyUsers={nearbyUsers}
+              islocationclicked={islocationclicked}
             />
           ) : (
-            <Backend_Data uid={loggedinId} nearbyUsers={nearbyUsers} />
+            <Backend_Data uid={loggedinId} nearbyUsers={nearbyUsers} islocationclicked={islocationclicked} />
           )
         ) : (
           <Backend_Data
             profession=""
             uid={loggedinId}
             nearbyUsers={nearbyUsers}
+            islocationclicked={islocationclicked}
           />
         )}
       </View>
