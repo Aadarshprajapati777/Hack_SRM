@@ -277,7 +277,7 @@ const Home_Page = () => {
         <TouchableOpacity onPress={handleLocationClick}>
           <View style={styles.locationContainer}>
             <Ionicons name="location-sharp" size={24} color="black" />
-            <Text style={styles.locationText}>kerala</Text>
+            <Text style={styles.locationText}>Nearby</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -295,6 +295,7 @@ const Home_Page = () => {
               setUser(null);
               setIslocationclicked(false);
               navigation.navigate("Login_Page");
+            
             });
           }}
         >
