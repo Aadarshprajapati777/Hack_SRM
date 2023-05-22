@@ -60,6 +60,59 @@ const Backend_Data = (props) => {
     setLoading(false);
   };
 
+  const fetchUserDatabyLocation = async (nearbyUserid) => {
+    const db = getFirestore();
+    let q = collection(db, "users");
+    if (nearbyUserid) {
+      console.log("in fetch user data by location:", nearbyUserid);
+      q = query(q, where("userId", "==",nearbyUserid));
+      console.log("in fetch user data by location:", q);
+
+    }
+    const querySnapshot = await getDocs(q);
+    const storage = getStorage();
+    const userData = await Promise.all(
+      querySnapshot.docs.map(async (doc) => {
+        const profileImageUrl = await getDownloadURL(
+          ref(storage, doc.data().imageUrl)
+        );
+        return {
+          name: doc.data().fullName,
+          profile_image: profileImageUrl,
+          address: doc.data().address,
+          profession: doc.data().profession,
+          contact: doc.data().phoneNumber,
+          id: doc.id,
+          userId: doc.data().userId,
+          ...doc.data(),
+        };
+      })
+    );
+    setData(userData);
+    setLoading(false);
+  };
+
+
+useEffect(() => {
+  //if props.nearbyUsers length > 0
+
+   if(props.nearbyUsers.length > 0)
+  {
+    console.log("in nearby users condition:", props.nearbyUsers)
+    for (let i = 0; i < props.nearbyUsers.length; i++) {
+      console.log("in for loop:", props.nearbyUsers[i].userId);
+      fetchUserDatabyLocation(props.nearbyUsers[i].userId);
+    }
+  }
+}, [props.nearbyUsers]);
+
+
+
+  // if(props.nearbyUsers){
+  //   fetchUserDatabyLocation(props.nearbyUsers);
+  // }
+
+
   useEffect(() => {
     fetchUserData(props.profession);
   }, [props.profession]);
