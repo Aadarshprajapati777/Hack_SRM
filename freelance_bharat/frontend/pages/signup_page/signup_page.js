@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -56,6 +57,7 @@ const Signup_Page = () => {
   });
   const [image, setImage] = useState("");
   const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const {
     fullName,
@@ -106,10 +108,13 @@ const Signup_Page = () => {
       location
     ) {
       try {
+        // Show the activity indicator
+        setLoading(true);
+
         const response = await fetch(image.uri);
         const blob = await response.blob();
 
-        console.log("bolb", blob);
+        console.log("blob", blob);
 
         const imageRef = ref(storage, `uploads/images/${new Date().getTime()}`);
         await uploadBytes(imageRef, blob);
@@ -138,10 +143,14 @@ const Signup_Page = () => {
         navigation.navigate("Login_Page");
       } catch (error) {
         console.error("Error registering user: ", error);
+        Alert.alert("Error registering user");
+      } finally {
+        // Hide the activity indicator
+        setLoading(false);
       }
     } else {
-      console.error("Please fill all the field");
-      Alert.alert("Please fill all the field");
+      console.error("Please fill all the fields");
+      Alert.alert("Please fill all the fields");
     }
   };
 
@@ -185,6 +194,8 @@ const Signup_Page = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
       <View style={[formStyle, styles.form]}>
         <Text style={styles.title}>Sign Up</Text>
         <TextInput
@@ -215,22 +226,21 @@ const Signup_Page = () => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
-          onChangeText={(text) =>
-            handleRegistrationFormInputChange("password", text)
-          }
-          value={password}
-          secureTextEntry={true}
-        />
-
-        <TextInput
-          style={styles.input}
           placeholder="Email"
           onChangeText={(text) =>
             handleRegistrationFormInputChange("email", text)
           }
           value={email}
           keyboardType="email-address"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={(text) =>
+            handleRegistrationFormInputChange("password", text)
+          }
+          value={password}
+          secureTextEntry={true}
         />
 
         <View style={styles.pickerContainer}>
@@ -266,12 +276,10 @@ const Signup_Page = () => {
               display: "flex",
               flexDirection: "row",
               marginBottom: 15,
-              
             }}
           >
-              <Ionicons name="location-sharp" size={24} color="black" />
-              <Text style={styles.locationText}>Please tap on location icon</Text>
-
+            <Ionicons name="location-sharp" size={24} color="black" />
+            <Text style={styles.locationText}>Please tap on location icon</Text>
           </View>
         </TouchableOpacity>
 
