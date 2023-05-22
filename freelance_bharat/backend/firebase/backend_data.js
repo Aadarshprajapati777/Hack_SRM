@@ -56,15 +56,15 @@ const Backend_Data = (props) => {
     setData(userData);
     setLoading(false);
   };
-
-  const fetchUserDatabyLocation = async (
-    nearbyUserid,
-  ) => {
+  const fetchUserDatabyLocation = async (nearbyUserid, distance) => {
+    console.log("nearbyUser distance", distance);
+    const roundedDistance = distance.toFixed(2); // Round the distance to three decimal places
+    const distanceString = roundedDistance.toString(); // Convert the distance to a string
   
     const db = getFirestore();
     let q = collection(db, "users");
-
-    if (nearbyUserid ) {
+  
+    if (nearbyUserid) {
       q = query(q, where("userId", "==", nearbyUserid));
       const querySnapshot = await getDocs(q);
       const storage = getStorage();
@@ -81,6 +81,7 @@ const Backend_Data = (props) => {
             contact: doc.data().phoneNumber,
             id: doc.id,
             userId: doc.data().userId,
+            distance: distanceString, // Use the rounded distance string
             ...doc.data(),
           };
         })
@@ -88,64 +89,45 @@ const Backend_Data = (props) => {
       return userData; // Return the new data
     }
   };
-
-
-
-
-
-
-
+  
   const filterNearbyUsersByProfession = (data, profession) => {
     if (profession) {
-      const filteredData = data.filter((user) => user.profession === profession);
+      const filteredData = data.filter(
+        (user) => user.profession === profession
+      );
       // Perform further actions with the filtered data
       console.log("Filtered Data:", filteredData);
       setData(filteredData);
-    }
-    else
-    {
+    } else {
       console.log("Filtered Data:", data);
       setData(data);
     }
   };
-  
 
+  if (props.islocationclicked) {
+    useEffect(() => {
+      if (props.nearbyUsers.length > 0) {
+        const fetchData = async () => {
+          const newData = await Promise.all(
+            props.nearbyUsers.map((item) => {
+              return fetchUserDatabyLocation(item.userId,item.distance);
+            })
+          );
+          const mergedData = newData.flat();
+          setData(mergedData);
+          console.log("in mergerd data checking profession", props.profession);
+          filterNearbyUsersByProfession(mergedData, props.profession);
+          setLoading(false);
+        };
 
-
-
-
-
-
-
-
-  if(props.islocationclicked){
-  useEffect(() => {
-    if (props.nearbyUsers.length > 0) {
-      const fetchData = async () => {
-        const newData = await Promise.all(
-          props.nearbyUsers.map((item) => {
-            return fetchUserDatabyLocation(item.userId);
-          })
-        );
-        const mergedData = newData.flat(); 
-        setData(mergedData); 
-        console.log("in mergerd data checking profession",props.profession)
-        filterNearbyUsersByProfession(mergedData,props.profession);
-        setLoading(false);
-      };
-
-      fetchData();
-    }
-  }, [props.nearbyUsers,props.profession]);
-
-  }else{
+        fetchData();
+      }
+    }, [props.nearbyUsers, props.profession]);
+  } else {
     useEffect(() => {
       fetchUserData(props.profession);
     }, [props.profession]);
   }
-
-
-
 
   useEffect(() => {
     console.log("UID changed:", props.uid);
@@ -210,8 +192,8 @@ const Backend_Data = (props) => {
             }}
           >
             <Text style={{ fontSize: 17 }}>{item.name}</Text>
-
-            <Text style={{ fontSize: 11, color: "grey" }}>{item.address}</Text>
+          <Text style={{ fontSize: 13 }}>{item.address}</Text>
+          {item.distance && <Text style={{ fontSize: 9, color: "grey" }}>{item.distance} km away</Text>}          
           </View>
         </TouchableOpacity>
       </View>

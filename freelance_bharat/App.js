@@ -15,12 +15,6 @@ const MyStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-
-      <Stack.Screen
-          name="Signup_Page"
-          component={Signup_Page}
-          options={{ title: "SignupPage" }}
-        />
         <Stack.Screen
           name="Home_Page"
           component={Home_Page}
@@ -28,12 +22,16 @@ const MyStack = () => {
         />
 
         <Stack.Screen
+          name="Signup_Page"
+          component={Signup_Page}
+          options={{ title: "SignupPage" }}
+        />
+
+        <Stack.Screen
           name="Landing_Page"
           component={Landing_Page}
           options={{ title: "LandingPage" }}
         />
-
-
 
         <Stack.Screen name="UsersScreen" component={UsersScreen} />
 

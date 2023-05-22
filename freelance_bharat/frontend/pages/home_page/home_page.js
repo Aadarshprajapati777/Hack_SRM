@@ -70,9 +70,9 @@ const Home_Page = () => {
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
-    return distance; // Distance in kilometers
+    return { distance, userLocation: { lat: lat2, lon: lon2 } };
   };
-
+  
   const handleLocationClick = async () => {
     if (location) {
       const { latitude, longitude } = location.coords;
@@ -82,24 +82,18 @@ const Home_Page = () => {
         const querySnapshot = await getDocs(usersQuery);
         const users = querySnapshot.docs.map((doc) => doc.data());
 
-        // Filter users within a 10km radius
-        const nearbyUsers = users.filter((user) => {
-          console.log("User:", user);
-          console.log("User latitude:", latitude);
-          console.log("User longitude:", longitude);
-          console.log("Other user latitude:", user.userlocation.coords.latitude);
-          console.log("Other user longitude:", user.userlocation.coords.longitude);
-
-          const distance = calculateDistance(
+        const nearbyUsers = users
+        .map((user) => {
+          const distanceObj = calculateDistance(
             latitude,
             longitude,
-            user.userlocation.coords.latitude,  
+            user.userlocation.coords.latitude,
             user.userlocation.coords.longitude
-
           );
-          console.log("distance", distance);
-          return distance <= 10; // Check if the distance is less than or equal to 10km
-        });
+          return { ...user, ...distanceObj };
+        })
+        .filter((user) => user.distance <= 10);
+      
          
         console.log("nearbyUsers", nearbyUsers);
         setNearbyUsers(nearbyUsers);
