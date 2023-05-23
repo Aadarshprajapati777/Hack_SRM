@@ -195,7 +195,7 @@ const Backend_Data = (props) => {
           <Text style={{ fontSize: 13 }}>{item.address}</Text>
           {item.distance && <Text style={{ fontSize: 9, color: "grey" }}>{item.distance} km away</Text>}          
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity>  
       </View>
       <View style={{ flexDirection: "row" }}>
         <TouchableOpacity

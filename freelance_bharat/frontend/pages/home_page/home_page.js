@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import * as Location from "expo-location";
 // import { Geocoder } from 'react-native-geocoding';
-
+import Slider from "@react-native-community/slider";
 import Geocoder from "react-native-geocoding";
 
 import { useNavigation } from "@react-navigation/native";
@@ -57,6 +57,8 @@ const Home_Page = () => {
   const [longitude, setLongitude] = useState(null);
   const [nearbyUsers, setNearbyUsers] = useState([]);
   const [islocationclicked, setIslocationclicked] = useState(false);
+  const [sliderValue, setSliderValue] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Earth's radius in kilometers
@@ -72,8 +74,10 @@ const Home_Page = () => {
     const distance = R * c;
     return { distance, userLocation: { lat: lat2, lon: lon2 } };
   };
-  
+
   const handleLocationClick = async () => {
+    setIsVisible(true);
+
     if (location) {
       const { latitude, longitude } = location.coords;
 
@@ -83,18 +87,17 @@ const Home_Page = () => {
         const users = querySnapshot.docs.map((doc) => doc.data());
 
         const nearbyUsers = users
-        .map((user) => {
-          const distanceObj = calculateDistance(
-            latitude,
-            longitude,
-            user.userlocation.coords.latitude,
-            user.userlocation.coords.longitude
-          );
-          return { ...user, ...distanceObj };
-        })
-        .filter((user) => user.distance <= 10);
-      
-         
+          .map((user) => {
+            const distanceObj = calculateDistance(
+              latitude,
+              longitude,
+              user.userlocation.coords.latitude,
+              user.userlocation.coords.longitude
+            );
+            return { ...user, ...distanceObj };
+          })
+          .filter((user) => user.distance <= sliderValue);
+
         console.log("nearbyUsers", nearbyUsers);
         setNearbyUsers(nearbyUsers);
         setIslocationclicked(true);
@@ -102,11 +105,25 @@ const Home_Page = () => {
         console.error("Error fetching nearby users:", error);
       }
     }
+
   };
 
   useEffect(() => {
     getLocationAsync();
   }, []);
+  useEffect(() => {
+    let timer;
+  
+    if (islocationclicked) {
+      timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 5000); // Change the timeout value (in milliseconds) to the desired duration
+    }
+  
+    return () => clearTimeout(timer);
+  }, [islocationclicked, Date.now()]); // Add Date.now() as a dependency
+  
+  
 
   const getLocationAsync = async () => {
     console.log("in getLocationAsync and location is", location);
@@ -173,6 +190,11 @@ const Home_Page = () => {
     } catch (e) {
       console.error("Error fetching posts: ", e);
     }
+  };
+
+  const handleDistanceChange = (value) => {
+    console.log("distance", value);
+    setSliderValue(Math.round(value));
   };
 
   const handleProfileButtonClick = () => {
@@ -243,8 +265,15 @@ const Home_Page = () => {
           style={styles.menuButton}
           onPress={handleMenuButtonClick}
         >
-          <Ionicons name="menu-outline" size={50} color="black" />
+          {/* <Ionicons name="menu-outline" size={30} color="black" />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={handleProfileButtonClick}
+        > */}
+          <Ionicons name="person-circle-outline" size={35} color="black" />
+        </TouchableOpacity>
+
         <TextInput
           placeholder="Post a requirement"
           style={styles.inputField}
@@ -270,15 +299,37 @@ const Home_Page = () => {
         </View>
         <TouchableOpacity onPress={handleLocationClick}>
           <View style={styles.locationContainer}>
-            <Ionicons name="location-sharp" size={24} color="black" />
-            <Text style={styles.locationText}>Nearby</Text>
+            {/* <Slider
+              style={{ width: 200, height: 40 }}
+              minimumValue={0}
+              maximumValue={100}
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#000000"
+            /> */}
+            {islocationclicked ? (
+              <View>
+                {isVisible ? (
+                  <Slider
+                    style={{ width: 70, height: 40 }}
+                    minimumValue={0}
+                    maximumValue={100}
+                    minimumTrackTintColor="#000000"
+                    maximumTrackTintColor="#FFFFFF"
+                    onValueChange={handleDistanceChange}
+                  />
+                ) : (
+                  <Ionicons name="location-sharp" size={24} color="black" />
+                )}
+              </View>
+            ) : (
+              <Ionicons name="location-sharp" size={24} color="black" />
+            )}
+            {islocationclicked ? (
+              <Text style={styles.slidervalue}>{sliderValue}</Text>
+            ) : (
+              <Text style={styles.locationText}>Nearby</Text>
+            )}
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfileButtonClick}
-        >
-          <Ionicons name="person-circle-outline" size={45} color="black" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -289,7 +340,6 @@ const Home_Page = () => {
               setUser(null);
               setIslocationclicked(false);
               navigation.navigate("Login_Page");
-            
             });
           }}
         >
@@ -323,7 +373,11 @@ const Home_Page = () => {
               islocationclicked={islocationclicked}
             />
           ) : (
-            <Backend_Data uid={loggedinId} nearbyUsers={nearbyUsers} islocationclicked={islocationclicked} />
+            <Backend_Data
+              uid={loggedinId}
+              nearbyUsers={nearbyUsers}
+              islocationclicked={islocationclicked}
+            />
           )
         ) : (
           <Backend_Data
@@ -391,7 +445,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   menuButton: {
-    marginLeft: 0,
+    // marginRight: 10, // added margin right
+    marginLeft: 10,
   },
   fullScreen: {
     flex: 1,
@@ -420,7 +475,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     paddingLeft: 10,
-    fontSize: 16, // added font size
+    fontSize: 13, // added font size
   },
   locationContainer: {
     display: "flex",

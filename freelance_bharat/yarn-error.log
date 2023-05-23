@@ -1,8 +1,8 @@
 Arguments: 
-  /home/adarsh/.nvm/versions/node/v14.21.3/bin/node /snap/node/7392/bin/yarn.js add expo-location@~15.1.1
+  /home/adarsh/.nvm/versions/node/v14.21.3/bin/node /snap/node/7392/bin/yarn.js add @react-native-community/slider@4.4.2
 
 PATH: 
-  /home/adarsh/.meteor:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/bin:/home/adarsh/.pyenv/plugins/pyenv-virtualenv/shims:/home/adarsh/.pyenv/shims:/home/adarsh/.pyenv/bin:/home/adarsh/.nvm/versions/node/v14.21.3/bin:/home/adarsh/.meteor:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/bin:/home/adarsh/.pyenv/plugins/pyenv-virtualenv/shims:/home/adarsh/.pyenv/bin:/home/adarsh/.meteor:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/adarsh/.dotnet/tools
+  /home/adarsh/.nvm/versions/node/v14.21.3/bin:/home/adarsh/.meteor:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/shims:/home/adarsh/.rbenv/bin:/home/adarsh/.pyenv/plugins/pyenv-virtualenv/shims:/home/adarsh/.pyenv/shims:/home/adarsh/.pyenv/bin:/home/adarsh/.meteor:/home/adarsh/.meteor:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/adarsh/.dotnet/tools
 
 Yarn version: 
   1.22.19
@@ -47,7 +47,9 @@ npm manifest:
       "@react-navigation/native-stack": "^6.9.12",
       "expo": "^48.0.16",
       "expo-image-picker": "~14.1.1",
+      "expo-location": "^15.1.1",
       "expo-status-bar": "~1.4.4",
+      "expo-updates": "^0.16.4",
       "firebase": "^9.21.0",
       "react": "18.2.0",
       "react-dom": "18.2.0",
@@ -4650,6 +4652,11 @@ Lockfile:
     version "12.0.1"
     resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-12.0.1.tgz#19c5ab55391394ded3f6c262b0707c7140658a11"
     integrity sha512-hqeCnb4033TyuZaXs93zTK7rjVJ3bywXATyMmKmKkLEsH2PKBAl/VmjlCOPQL/2Ncqz6aj7Wo//tjeJTARBD4g==
+  
+  expo-location@~15.1.1:
+    version "15.1.1"
+    resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-15.1.1.tgz#9289ca687afbdb73d847cc8c821ab66746eb9d47"
+    integrity sha512-hoKRlmi6Ya+NeZ72Zt385SDcSsIDpJI60TCBVO+Hc9xfKA9Hyminyyo5WiwI8J03igmPTCl8Y37MxBNKY9AWkg==
   
   expo-modules-autolinking@1.2.0:
     version "1.2.0"
