@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
@@ -20,9 +21,7 @@ import {
   addDoc,
 } from "firebase/firestore";
 import * as Location from "expo-location";
-// import { Geocoder } from 'react-native-geocoding';
 import Slider from "@react-native-community/slider";
-import Geocoder from "react-native-geocoding";
 
 import { useNavigation } from "@react-navigation/native";
 import { firebase } from "../../../backend/firebase/firebase_config";
@@ -105,25 +104,22 @@ const Home_Page = () => {
         console.error("Error fetching nearby users:", error);
       }
     }
-
   };
 
   useEffect(() => {
     getLocationAsync();
   }, []);
+
   useEffect(() => {
     let timer;
-  
     if (islocationclicked) {
       timer = setTimeout(() => {
         setIsVisible(false);
       }, 5000); // Change the timeout value (in milliseconds) to the desired duration
     }
-  
+
     return () => clearTimeout(timer);
   }, [islocationclicked, Date.now()]); // Add Date.now() as a dependency
-  
-  
 
   const getLocationAsync = async () => {
     console.log("in getLocationAsync and location is", location);
@@ -191,18 +187,11 @@ const Home_Page = () => {
       console.error("Error fetching posts: ", e);
     }
   };
+  console.log("distance", sliderValue);
 
-  const handleDistanceChange = (value) => {
-    console.log("distance", value);
-    setSliderValue(Math.round(value));
-  };
-
-  const handleProfileButtonClick = () => {
-    alert("Profile Button Clicked");
-  };
-
-  const handleProfessionFilter = () => {
-    alert("Profession Filter Clicked");
+  const handleSliderValueChange = (value) => {
+    const roundedValue = value.toFixed(0);
+    setSliderValue(parseFloat(roundedValue));
   };
 
   const handleMenuButtonClick = () => {
@@ -231,7 +220,6 @@ const Home_Page = () => {
 
       phoneNumber = userData.phoneNumber;
       fullName = userData.fullName;
-      console.log("phone number", phoneNumber);
       const post = {
         user: user,
         text: postText,
@@ -241,9 +229,6 @@ const Home_Page = () => {
       };
       if (postText.length !== 0) {
         const docRef = await addDoc(collection(firestore, "posts"), post);
-        console.log("posted", postText);
-        console.log("user", user);
-        console.log("phone", phoneNumber);
         console.log("Document written with ID: ", docRef.id);
         setPostText("");
       } else {
@@ -254,10 +239,6 @@ const Home_Page = () => {
     }
   };
 
-  const handlePostText = (text) => {
-    setPostText(text);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -265,12 +246,6 @@ const Home_Page = () => {
           style={styles.menuButton}
           onPress={handleMenuButtonClick}
         >
-          {/* <Ionicons name="menu-outline" size={30} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={handleProfileButtonClick}
-        > */}
           <Ionicons name="person-circle-outline" size={35} color="black" />
         </TouchableOpacity>
 
@@ -299,23 +274,16 @@ const Home_Page = () => {
         </View>
         <TouchableOpacity onPress={handleLocationClick}>
           <View style={styles.locationContainer}>
-            {/* <Slider
-              style={{ width: 200, height: 40 }}
-              minimumValue={0}
-              maximumValue={100}
-              minimumTrackTintColor="#FFFFFF"
-              maximumTrackTintColor="#000000"
-            /> */}
             {islocationclicked ? (
               <View>
                 {isVisible ? (
                   <Slider
                     style={{ width: 70, height: 40 }}
                     minimumValue={0}
-                    maximumValue={100}
+                    maximumValue={120}
                     minimumTrackTintColor="#000000"
                     maximumTrackTintColor="#FFFFFF"
-                    onValueChange={handleDistanceChange}
+                    onValueChange={handleSliderValueChange}
                   />
                 ) : (
                   <Ionicons name="location-sharp" size={24} color="black" />
@@ -368,21 +336,20 @@ const Home_Page = () => {
           selectedProfession !== "All" ? (
             <Backend_Data
               profession={selectedProfession}
-              uid={loggedinId}
+              navigation={navigation}
               nearbyUsers={nearbyUsers}
               islocationclicked={islocationclicked}
             />
           ) : (
             <Backend_Data
-              uid={loggedinId}
+              navigation={navigation}
               nearbyUsers={nearbyUsers}
               islocationclicked={islocationclicked}
             />
           )
         ) : (
           <Backend_Data
-            profession=""
-            uid={loggedinId}
+            navigation={navigation}
             nearbyUsers={nearbyUsers}
             islocationclicked={islocationclicked}
           />
@@ -393,138 +360,83 @@ const Home_Page = () => {
 };
 
 const styles = StyleSheet.create({
-  // buttonContainer: {
-  //   position: 'absolute',
-  //   bottom: 0,
-  //   alignSelf: 'center',
-  //   marginBottom: 5,
-  // },
-  // button: {
-  //   backgroundColor: '#007AFF',
-  //   borderRadius: 50,
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 20,
-
-  // },
-  // buttonText: {
-  //   color: 'white',
-  //   fontSize: 12,
-  //   fontWeight: 'bold',
-  // },
   container: {
     flex: 1,
-    display: "flex",
-    position: "relative",
-    backgroundColor: "#fff",
-  },
-  logoutButton: {
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "red",
-  },
-  logoutText: {
-    color: "white",
-    fontWeight: "bold",
+    backgroundColor: "#F4F4F4",
   },
   header: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  header2: {
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   menuButton: {
-    // marginRight: 10, // added margin right
-    marginLeft: 10,
+    marginRight: 10,
   },
-  fullScreen: {
+  inputField: {
     flex: 1,
-    alignItems: "stretch",
-    justifyContent: "center",
+    height: 40,
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    marginRight: 10,
   },
-  professionFilter: {
-    right: 5,
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 30,
-    overflow: "hidden",
+  postButton: {
+    backgroundColor: "#1976D2",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
   },
-  searchContainer: {
-    display: "flex",
+  postText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  header2: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EFEEF9",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: "white",
+    elevation: 2,
+  },
+  searchContainer: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F4F4F4",
+    borderRadius: 20,
+    paddingHorizontal: 10,
     marginRight: 10,
-    height: 40, // added height
   },
   searchInput: {
     flex: 1,
-    paddingLeft: 10,
-    fontSize: 13, // added font size
+    height: 40,
+    paddingHorizontal: 10,
   },
   locationContainer: {
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EFEEF9",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 15,
-    height: 40, // added height
   },
   locationText: {
-    paddingLeft: 5,
-    paddingRight: 5,
+    fontSize: 16,
+    marginLeft: 5,
   },
-  profileButton: {
-    marginRight: 10, // added margin right
+  slidervalue: {
+    fontSize: 16,
+    marginLeft: 5,
   },
-  inputField: {
-    backgroundColor: "#EFEEF9",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    flex: 1,
+  logoutButton: {
     marginLeft: 10,
-    marginRight: 10,
-    height: 40, // added height
   },
-  postButton: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    alignItems: "center", // added align items
-    justifyContent: "center", // added justify content
-    width: 70, // added width
-    height: 30, // added height
-  },
-  postText: {
-    fontSize: 17,
+  logoutText: {
+    color: "#1976D2",
     fontWeight: "bold",
   },
-  dropdown: {
-    maxHeight: 200,
-  },
-
   professionFilter: {
+    flex: 1,
     padding: 10,
-    backgroundColor: "#fff",
   },
   dropdownButtonContainer: {
     flexDirection: "row",
@@ -533,20 +445,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dropdown: {
-    marginTop: 5,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: "#ccc",
+    marginTop: 40,
   },
   button: {
-    backgroundColor: "#3f51b5",
+    backgroundColor: "#1976D2",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 5,
+    borderRadius: 20,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 16,
+    color: "white",
     fontWeight: "bold",
   },
 });

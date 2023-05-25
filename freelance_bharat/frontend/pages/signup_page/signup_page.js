@@ -267,7 +267,7 @@ const Signup_Page = () => {
         <TouchableOpacity onPress={handleLocationClick}>
           <View
             style={{
-              width: 350,
+              width: 300,
               height: 50,
               borderRadius: 25,
               backgroundColor: "lightblue",
