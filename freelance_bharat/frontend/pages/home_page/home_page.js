@@ -57,6 +57,7 @@ const Home_Page = () => {
   const [nearbyUsers, setNearbyUsers] = useState([]);
   const [islocationclicked, setIslocationclicked] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
+
   const [isVisible, setIsVisible] = useState(true);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -115,7 +116,7 @@ const Home_Page = () => {
     if (islocationclicked) {
       timer = setTimeout(() => {
         setIsVisible(false);
-      }, 5000); // Change the timeout value (in milliseconds) to the desired duration
+      }, 4000); // Change the timeout value (in milliseconds) to the desired duration
     }
 
     return () => clearTimeout(timer);
@@ -190,8 +191,14 @@ const Home_Page = () => {
   console.log("distance", sliderValue);
 
   const handleSliderValueChange = (value) => {
+    console.log("location change to ", value);
     const roundedValue = value.toFixed(0);
     setSliderValue(parseFloat(roundedValue));
+  };
+
+  const handleSliderRelease = () => {
+    console.log("slider released");
+    setSliderValueOnRelease(sliderValue);
   };
 
   const handleMenuButtonClick = () => {
@@ -278,12 +285,17 @@ const Home_Page = () => {
               <View>
                 {isVisible ? (
                   <Slider
-                    style={{ width: 70, height: 40 }}
+                    style={{ width: 70, height: 30 }}
                     minimumValue={0}
                     maximumValue={120}
                     minimumTrackTintColor="#000000"
                     maximumTrackTintColor="#FFFFFF"
                     onValueChange={handleSliderValueChange}
+                    onSlidingComplete={(value) => {
+                      const roundedValue = Math.floor(value);
+                      setSliderValue(roundedValue);
+                      handleLocationClick();
+                    }}
                   />
                 ) : (
                   <Ionicons name="location-sharp" size={24} color="black" />
@@ -337,12 +349,14 @@ const Home_Page = () => {
             <Backend_Data
               profession={selectedProfession}
               navigation={navigation}
+              uid={loggedinId}
               nearbyUsers={nearbyUsers}
               islocationclicked={islocationclicked}
             />
           ) : (
             <Backend_Data
               navigation={navigation}
+              uid={loggedinId}
               nearbyUsers={nearbyUsers}
               islocationclicked={islocationclicked}
             />
@@ -351,6 +365,7 @@ const Home_Page = () => {
           <Backend_Data
             navigation={navigation}
             nearbyUsers={nearbyUsers}
+            uid={loggedinId}
             islocationclicked={islocationclicked}
           />
         )}
@@ -400,6 +415,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "white",
     elevation: 2,
+    paddingVertical: 5, // Adjust the value to make the header smaller vertically
   },
   searchContainer: {
     flex: 1,
@@ -409,11 +425,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 10,
     marginRight: 10,
+    paddingHorizontal: 1, // Adjust the value to reduce the horizontal padding
   },
   searchInput: {
     flex: 1,
     height: 40,
     paddingHorizontal: 10,
+    height: 30, // Adjust the value to make the search input smaller vertically
+    paddingHorizontal: 1, // Adjust the value to reduce the horizontal pad
   },
   locationContainer: {
     flexDirection: "row",
@@ -431,7 +450,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   logoutText: {
-    color: "#1976D2",
+    color: "#FF0000",
     fontWeight: "bold",
   },
   professionFilter: {
