@@ -85,7 +85,8 @@ https://github.com/Aadarshprajapati777/Hack_SRM/assets/112074431/6e2a90e2-f615-4
 ## QR Code
 Directly Scan this hosted app QR code in Expo GO app to access the beta version of Freelance Bharat:
 
-![Screenshot from 2023-07-21 22-47-21](https://github.com/Aadarshprajapati777/Hack_SRM/assets/112074431/8fe0b961-39d6-4fd9-9268-9a22370e9c75)
+![Screenshot from 2023-07-21 23-04-14](https://github.com/Aadarshprajapati777/Hack_SRM/assets/112074431/4eebab35-f39b-4d15-b1a7-8179f515fdf9)
+
 
 
 ## Join the Journey
