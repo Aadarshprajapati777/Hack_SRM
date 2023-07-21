@@ -76,8 +76,17 @@ We value your feedback and suggestions to enhance Freelance Bharat further. Plea
 ## Video Demonstration
 
 
+
+https://github.com/Aadarshprajapati777/Hack_SRM/assets/112074431/6e2a90e2-f615-4f0d-8006-7fba1d51b1c1
+
+
+
+
 ## QR Code
 Directly Scan this hosted app QR code in Expo GO app to access the beta version of Freelance Bharat:
+
+![Screenshot from 2023-07-21 22-47-21](https://github.com/Aadarshprajapati777/Hack_SRM/assets/112074431/8fe0b961-39d6-4fd9-9268-9a22370e9c75)
+
 
 ## Join the Journey
 If you're passionate about empowering local professionals and transforming the way we connect with services, we invite you to join us on this exciting journey. We are actively seeking like-minded individuals with expertise in React Native, Firebase, and Expo, who share our vision of creating an exceptional platform that connects professionals and services effortlessly. Together, we can shape the future of local service connections!
